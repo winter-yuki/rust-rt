@@ -1,6 +1,7 @@
 use image::{Color, Image};
 
 use crate::{scene, Vector};
+use crate::objs::Touching;
 use crate::ray::Ray;
 use crate::scene::{Camera, Scene};
 
@@ -13,7 +14,7 @@ pub fn render(scene: &Scene, logger: Logger) -> Image {
         for i_col in 0..scene.width {
             let h = i_row as f64 / (scene.height - 1) as f64;
             let w = i_col as f64 / (scene.width - 1) as f64;
-            let ray = Ray::from(&scene.cam, w, h);
+            let ray = Ray::from_cam(&scene.cam, w, h);
             img[(i_row, i_col)] = trace(&ray, scene);
         }
     }
@@ -23,9 +24,9 @@ pub fn render(scene: &Scene, logger: Logger) -> Image {
 fn trace(r: &Ray, s: &Scene) -> Color {
     // TODO
     for obj in &s.objs {
-        // TODO compare distance
-        if let Some(c) = obj.touch(r) {
-            return c;
+        // TODO choose closest
+        if let Some(ting) = obj.touch(r) {
+            return ting.c();
         }
     }
     (s.background_getter)(r)

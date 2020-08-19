@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use image::Color;
 
 use crate::light::{Ambient, LightBox};
-use crate::objs::{ObjectBox, Sphere};
+use crate::objs::{Sphere, TouchBox};
 use crate::ray::Ray;
 use crate::Vector;
 
@@ -12,7 +12,7 @@ pub struct Scene {
     pub(crate) width: usize,
     pub(crate) height: usize,
     pub(crate) cam: Camera,
-    pub(crate) objs: Vec<ObjectBox>,
+    pub(crate) objs: Vec<TouchBox>,
     pub(crate) lights: Vec<LightBox>,
     pub(crate) background_getter: Box<dyn Fn(&Ray) -> Color>,
 }
@@ -36,22 +36,33 @@ type Result<T> = std::result::Result<T, Error>;
 impl Scene {
     pub fn from_json_file(_path: &Path) -> Result<Scene> {
         // TODO make scene normalized
+        // TODO
+        Ok(Scene::default())
+    }
+}
 
+impl Default for Scene {
+    fn default() -> Self {
         let aspect_ratio = 16. / 9.;
         let width = 400;
         let viewport_h = 2.;
-        Ok(Scene {
+        Scene {
             width,
             height: (width as f64 / aspect_ratio).round() as usize,
             cam: Camera {
                 pos: Vector::new(0., 0., 0.),
-                up: Vector::new(0., 1., 0.),
-                to: Vector::new(1., 0., 0.),
+                up: Vector::new(0., 1., 0.).normalize(),
+                to: Vector::new(0., 0., -1.),
                 viewport_h,
                 viewport_w: viewport_h * aspect_ratio,
             },
             objs: vec![
-                Box::new(Sphere::from(Vector::new(3., 0., 0.), 2., Color { r: 0, g: 200, b: 0 }))
+                Box::new(Sphere::new(
+                    Vector::new(0., 0., -3.), 2., Color { r: 0, g: 200, b: 0 },
+                )),
+                Box::new(Sphere::new(
+                    Vector::new(0., -101., -1.), 100., Color { r: 0, g: 0, b: 200 },
+                ))
             ],
             lights: vec![Box::new(Ambient)],
             background_getter: Box::new(|ray| {
@@ -65,8 +76,7 @@ impl Scene {
                     b: b as u8,
                 }
             }),
-        })
-        // TODO
+        }
     }
 }
 
