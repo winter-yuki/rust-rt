@@ -1,5 +1,6 @@
 extern crate image;
 extern crate rt;
+extern crate serde_json;
 
 use std::{env, io, process};
 use std::path::PathBuf;
@@ -8,13 +9,13 @@ use rt::Logger;
 use rt::scene;
 use rt::scene::Scene;
 
-pub struct Cli {
-    pub scene_json_path: PathBuf,
-    pub save_path: PathBuf,
+struct Cli {
+    scene_json_path: PathBuf,
+    save_path: PathBuf,
 }
 
 impl Cli {
-    pub fn new(args: &[String]) -> Option<Cli> {
+    fn new(args: &[String]) -> Option<Cli> {
         match args {
             [_, jp, sp] => Some(Cli {
                 scene_json_path: PathBuf::from(jp),
@@ -27,16 +28,16 @@ impl Cli {
 
 enum Error {
     Cli,
-    ConfIO,
-    Parse,
-    ImgIO(io::Error),
+    ConfIO(io::Error),
+    ConfParse(serde_json::Error),
+    ImgWriteIO(io::Error),
 }
 
 impl From<scene::Error> for Error {
     fn from(e: scene::Error) -> Error {
         match e {
-            scene::Error::IO => Error::ConfIO,
-            scene::Error::Serde => Error::Parse
+            scene::Error::ConfReadIO(e) => Error::ConfIO(e),
+            scene::Error::ConfSerde(e) => Error::ConfParse(e),
         }
     }
 }
@@ -44,7 +45,7 @@ impl From<scene::Error> for Error {
 impl From<image::Error> for Error {
     fn from(e: image::Error) -> Error {
         match e {
-            image::Error::WriteIO(e) => Error::ImgIO(e)
+            image::Error::WriteIO(e) => Error::ImgWriteIO(e)
         }
     }
 }
@@ -63,9 +64,18 @@ fn main() {
                 );
                 process::exit(exitcode::NOINPUT)
             }
-            Error::ConfIO => todo!("Conf io error"),
-            Error::Parse => todo!("Parse error"),
-            Error::ImgIO(_) => todo!("Image io error")
+            Error::ConfIO(e) => {
+                eprintln!("Error while reading json config: {}", e);
+                process::exit(exitcode::IOERR)
+            }
+            Error::ConfParse(e) => {
+                eprintln!("Error while parsing config: {}", e);
+                process::exit(exitcode::CONFIG)
+            }
+            Error::ImgWriteIO(e) => {
+                eprintln!("Error while writing rendered image to file: {}", e);
+                process::exit(exitcode::IOERR)
+            }
         }
     }
 }

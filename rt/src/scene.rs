@@ -6,6 +6,7 @@ use crate::light::{Ambient, LightBox};
 use crate::obj::{ObjectBox, Sphere};
 use crate::render::Ray;
 use crate::Vector;
+use std::io;
 
 pub struct Scene {
     pub width: usize,
@@ -26,8 +27,8 @@ pub struct Camera {
 }
 
 pub enum Error {
-    IO,
-    Serde,
+    ConfReadIO(io::Error),
+    ConfSerde(serde_json::Error),
 }
 
 type Result<T> = std::result::Result<T, Error>;
