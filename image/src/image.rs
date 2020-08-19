@@ -16,7 +16,9 @@ impl From<png::EncodingError> for Error {
     fn from(e: png::EncodingError) -> Error {
         match e {
             png::EncodingError::IoError(e) => Error::WriteIO(e),
-            png::EncodingError::Format(e) => panic!("Unable to encode image as png: {}", e)
+            png::EncodingError::Format(e) =>
+                panic!("Unable to encode image as png \
+                        (inconsistent image state): {}", e)
         }
     }
 }
