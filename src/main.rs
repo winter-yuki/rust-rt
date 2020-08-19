@@ -1,9 +1,12 @@
+extern crate image;
 extern crate rt;
 
 use std::{env, io, process};
 use std::path::PathBuf;
 
-use rt::{image, scene};
+use rt::Logger;
+use rt::scene;
+use rt::scene::Scene;
 
 pub struct Cli {
     pub scene_json_path: PathBuf,
@@ -48,7 +51,8 @@ impl From<image::Error> for Error {
 
 fn main() {
     let args: Vec<_> = env::args().collect();
-    let res = run(args);
+    let logger = Box::new(|i, n| println!("Progress {} of {}", i, n));
+    let res = run(args, logger);
     match res {
         Ok(()) => println!("Finished!"),
         Err(e) => match e {
@@ -66,9 +70,9 @@ fn main() {
     }
 }
 
-fn run(args: Vec<String>) -> Result<(), Error> {
+fn run(args: Vec<String>, logger: Logger) -> Result<(), Error> {
     let Cli { scene_json_path, save_path } = Cli::new(&args).ok_or(Error::Cli)?;
-    let scene = rt::Scene::from_json_file(&scene_json_path)?;
-    let image = rt::render(&scene);
+    let scene = Scene::from_json_file(&scene_json_path)?;
+    let image = rt::render(&scene, logger);
     Ok(image.write_png(&save_path)?)
 }

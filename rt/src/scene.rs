@@ -1,15 +1,19 @@
 use std::path::{Path, PathBuf};
 
+use image::Color;
+
 use crate::light::{Ambient, LightBox};
 use crate::obj::{ObjectBox, Sphere};
+use crate::render::Ray;
 use crate::Vector;
 
 pub struct Scene {
-    pub(crate) width: usize,
-    pub(crate) height: usize,
-    pub(crate) cam: Camera,
-    pub(crate) objs: Vec<ObjectBox>,
-    pub(crate) lights: Vec<LightBox>,
+    pub width: usize,
+    pub height: usize,
+    pub cam: Camera,
+    pub objs: Vec<ObjectBox>,
+    pub lights: Vec<LightBox>,
+    pub background_getter: Box<dyn Fn(&Ray) -> Color>,
 }
 
 #[derive(Debug)]
@@ -17,6 +21,8 @@ pub struct Camera {
     pub pos: Vector,
     pub up: Vector,
     pub to: Vector,
+    pub viewport_w: f64,
+    pub viewport_h: f64,
 }
 
 pub enum Error {
@@ -28,16 +34,38 @@ type Result<T> = std::result::Result<T, Error>;
 
 impl Scene {
     pub fn from_json_file(_path: &Path) -> Result<Scene> {
+        let aspect_ratio = 16. / 9.;
+        let width = 400;
+        let viewport_h = 2.;
         Ok(Scene {
-            width: 256,
-            height: 256,
+            width,
+            height: (width as f64 / aspect_ratio).round() as usize,
             cam: Camera {
                 pos: Vector::new(0., 0., 0.),
-                up: Vector::new(0., 0., 1.),
+                up: Vector::new(0., 1., 0.),
                 to: Vector::new(1., 0., 0.),
+                viewport_h,
+                viewport_w: viewport_h * aspect_ratio,
             },
-            objs: vec![Box::new(Sphere)],
+            objs: vec![
+                Box::new(Sphere {
+                    c: Vector::new(3., 0., 0.),
+                    r: 2.,
+                    color: Color { r: 0, g: 200, b: 0 },
+                })
+            ],
             lights: vec![Box::new(Ambient)],
+            background_getter: Box::new(|ray| {
+                let t = 0.5 * (ray.dir.normalize() + Vector::new(1., 1., 1.));
+                let r = 255. * (1. - t[0] * 0.5);
+                let g = 255. * (1. - t[1] * 0.7);
+                let b = 255. * (1. - t[2] * 1.0);
+                Color {
+                    r: r as u8,
+                    g: g as u8,
+                    b: b as u8,
+                }
+            }),
         })
         // TODO
     }

@@ -4,7 +4,9 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/rt/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/image/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/dictionaries" />
+      <excludeFolder url="file://$MODULE_DIR$/image/target" />
       <excludeFolder url="file://$MODULE_DIR$/rt/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>

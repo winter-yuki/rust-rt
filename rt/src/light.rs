@@ -1,7 +1,7 @@
-pub(crate) trait Light {}
+pub trait Light {}
 
-pub(crate) type LightBox = Box<dyn Light>;
+pub type LightBox = Box<dyn Light>;
 
-pub(crate) struct Ambient;
+pub struct Ambient;
 
 impl Light for Ambient {}
