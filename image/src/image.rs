@@ -23,15 +23,21 @@ impl From<png::EncodingError> for Error {
 
 #[derive(Clone, Copy, Debug)]
 pub struct Color {
-    pub(crate) r: u8,
-    pub(crate) g: u8,
-    pub(crate) b: u8,
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct Image(Vec<Vec<Color>>);
 
 impl Image {
+    pub fn from_size(w: usize, h: usize) -> Image {
+        assert!(w > 0);
+        assert!(h > 0);
+        Image(vec![vec![Color { r: 0, g: 0, b: 0 }; w]; h])
+    }
+
     pub fn write_png(&self, path: &Path) -> Result<(), Error> {
         let file = fs::File::create(path)?;
         let writer = io::BufWriter::new(file);
@@ -44,19 +50,6 @@ impl Image {
             .write_image_data(&data)?)
     }
 
-    pub fn from(src: Vec<Vec<Color>>) -> Image {
-        let img = Image(src);
-        assert!(img.h() > 0);
-        assert!(img.w() > 0);
-        img
-    }
-
-    pub(crate) fn from_size(w: usize, h: usize) -> Image {
-        assert!(w > 0);
-        assert!(h > 0);
-        Image(vec![vec![Color { r: 0, g: 0, b: 0 }; w]; h])
-    }
-
     pub fn h(&self) -> usize {
         self.0.len()
     }
@@ -66,7 +59,7 @@ impl Image {
         self.0[0].len()
     }
 
-    fn linearized(&self) -> Vec<u8> {
+    pub fn linearized(&self) -> Vec<u8> {
         let mut res = Vec::with_capacity(3 * self.h() * self.w());
         for row in self.0.iter() {
             for Color { r, g, b } in row.iter() {
@@ -76,6 +69,15 @@ impl Image {
             }
         }
         res
+    }
+}
+
+impl From<Vec<Vec<Color>>> for Image {
+    fn from(data: Vec<Vec<Color>>) -> Self {
+        let img = Image(data);
+        assert!(img.h() > 0);
+        assert!(img.w() > 0);
+        img
     }
 }
 

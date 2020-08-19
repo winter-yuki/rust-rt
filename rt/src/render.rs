@@ -1,9 +1,9 @@
 use crate::{scene, Scene, Vector};
 use crate::image::{Color, Image};
 
-struct Ray {
+pub(crate) struct Ray {
     from: Vector,
-    to: Vector,
+    a: Vector,
 }
 
 impl Ray {
