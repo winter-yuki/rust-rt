@@ -1,29 +1,29 @@
+use std::io;
 use std::path::{Path, PathBuf};
 
 use image::Color;
 
 use crate::light::{Ambient, LightBox};
-use crate::obj::{ObjectBox, Sphere};
-use crate::render::Ray;
+use crate::objs::{ObjectBox, Sphere};
+use crate::ray::Ray;
 use crate::Vector;
-use std::io;
 
 pub struct Scene {
-    pub width: usize,
-    pub height: usize,
-    pub cam: Camera,
-    pub objs: Vec<ObjectBox>,
-    pub lights: Vec<LightBox>,
-    pub background_getter: Box<dyn Fn(&Ray) -> Color>,
+    pub(crate) width: usize,
+    pub(crate) height: usize,
+    pub(crate) cam: Camera,
+    pub(crate) objs: Vec<ObjectBox>,
+    pub(crate) lights: Vec<LightBox>,
+    pub(crate) background_getter: Box<dyn Fn(&Ray) -> Color>,
 }
 
 #[derive(Debug)]
-pub struct Camera {
-    pub pos: Vector,
-    pub up: Vector,
-    pub to: Vector,
-    pub viewport_w: f64,
-    pub viewport_h: f64,
+pub(crate) struct Camera {
+    pub(crate) pos: Vector,
+    pub(crate) up: Vector,
+    pub(crate) to: Vector,
+    pub(crate) viewport_w: f64,
+    pub(crate) viewport_h: f64,
 }
 
 pub enum Error {
@@ -35,6 +35,8 @@ type Result<T> = std::result::Result<T, Error>;
 
 impl Scene {
     pub fn from_json_file(_path: &Path) -> Result<Scene> {
+        // TODO make scene normalized
+
         let aspect_ratio = 16. / 9.;
         let width = 400;
         let viewport_h = 2.;
@@ -49,15 +51,11 @@ impl Scene {
                 viewport_w: viewport_h * aspect_ratio,
             },
             objs: vec![
-                Box::new(Sphere {
-                    c: Vector::new(3., 0., 0.),
-                    r: 2.,
-                    color: Color { r: 0, g: 200, b: 0 },
-                })
+                Box::new(Sphere::from(Vector::new(3., 0., 0.), 2., Color { r: 0, g: 200, b: 0 }))
             ],
             lights: vec![Box::new(Ambient)],
             background_getter: Box::new(|ray| {
-                let t = 0.5 * (ray.dir.normalize() + Vector::new(1., 1., 1.));
+                let t = 0.5 * (ray.dir().normalize() + Vector::new(1., 1., 1.));
                 let r = 255. * (1. - t[0] * 0.5);
                 let g = 255. * (1. - t[1] * 0.7);
                 let b = 255. * (1. - t[2] * 1.0);

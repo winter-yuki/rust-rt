@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate approx;
 extern crate image;
 extern crate nalgebra as na;
 #[macro_use]
@@ -8,9 +10,11 @@ pub use crate::{
     render::render,
 };
 
-pub mod light;
-pub mod obj;
 pub mod scene;
+
+mod light;
+mod objs;
 mod render;
+mod ray;
 
 type Vector = na::Vector3<f64>;
