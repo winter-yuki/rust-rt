@@ -1,11 +1,8 @@
 [package]
-name = "image"
-version = "0.2.0"
+name = "color"
+version = "0.1.0"
 authors = ["Andrey Stoyan <andrey.stoyan.csam@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-png = "0.16.6"
-
-[dependencies.color]
-path = "../color"
+num-traits = "0.2.12"

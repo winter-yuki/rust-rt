@@ -12,6 +12,10 @@ nalgebra = "0.20"
 approx = "0.3.2"
 float-ord = "0.2.0"
 rand = "0.7"
+num-traits = "0.2.12"
 
 [dependencies.image]
 path = "../image"
+
+[dependencies.color]
+path = "../color"

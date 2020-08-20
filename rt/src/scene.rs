@@ -1,17 +1,19 @@
 use std::io;
 use std::num::NonZeroUsize;
+use std::ops::Deref;
 use std::path::{Path, PathBuf};
 
-use image::Color;
+use color::Color;
 
 use crate::light::{Ambient, LightBox};
 use crate::objs::{Sphere, TouchBox};
 use crate::ray::Ray;
+use crate::utils::{NormVector, Positive};
 use crate::Vector;
 
 pub struct Scene {
-    pub(crate) width: usize,
-    pub(crate) height: usize,
+    pub(crate) width: NonZeroUsize,
+    pub(crate) height: NonZeroUsize,
     pub(crate) cam: Camera,
     pub(crate) objs: Vec<TouchBox>,
     pub(crate) lights: Vec<LightBox>,
@@ -21,10 +23,10 @@ pub struct Scene {
 #[derive(Debug)]
 pub(crate) struct Camera {
     pub(crate) pos: Vector,
-    pub(crate) up: Vector,
+    pub(crate) up: NormVector,
     pub(crate) to: Vector,
-    pub(crate) viewport_w: f64,
-    pub(crate) viewport_h: f64,
+    pub(crate) viewport_w: Positive<f64>,
+    pub(crate) viewport_h: Positive<f64>,
 }
 
 pub enum Error {
@@ -48,26 +50,26 @@ impl Default for Scene {
         let width = 400;
         let viewport_h = 2.;
         Scene {
-            width,
-            height: (width as f64 / aspect_ratio).round() as usize,
+            width: NonZeroUsize::new(width).unwrap(),
+            height: NonZeroUsize::new((width as f64 / aspect_ratio).round() as usize).unwrap(),
             cam: Camera {
                 pos: Vector::new(0., 0., 0.),
-                up: Vector::new(0., 1., 0.).normalize(),
+                up: NormVector::new(Vector::new(0., 1., 0.)),
                 to: Vector::new(0., 0., -1.),
-                viewport_h,
-                viewport_w: viewport_h * aspect_ratio,
+                viewport_h: Positive::new(viewport_h).unwrap(),
+                viewport_w: Positive::new(viewport_h * aspect_ratio).unwrap(),
             },
             objs: vec![
                 Box::new(Sphere::new(
-                    Vector::new(0., 1., -3.), 2., Color { r: 0, g: 200, b: 0 },
+                    Vector::new(0., 1., -5.), 2., Color { r: 0, g: 200, b: 0 },
                 )),
                 Box::new(Sphere::new(
                     Vector::new(0., -101., -1.), 100., Color { r: 0, g: 0, b: 200 },
                 ))
             ],
             lights: vec![Box::new(Ambient)],
-            background_getter: Box::new(|ray| {
-                let t = 0.5 * (ray.dir().normalize() + Vector::new(1., 1., 1.));
+            background_getter: Box::new(|Ray { dir, .. }| {
+                let t = 0.5 * (dir.deref() + Vector::new(1., 1., 1.));
                 let r = 255. * (1. - t[0] * 0.5);
                 let g = 255. * (1. - t[1] * 0.7);
                 let b = 255. * (1. - t[2] * 1.0);

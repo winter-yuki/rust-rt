@@ -1,9 +1,9 @@
-use std::{cmp, ops};
-use std::cmp::min;
-use std::ops::{Add, AddAssign};
+extern crate num_traits;
 
-use num_traits::{Bounded, CheckedAdd, Float, Num, NumCast, ToPrimitive, Unsigned, Zero};
-use num_traits::real::Real;
+use std::ops;
+use std::ops::AddAssign;
+
+use num_traits::{Bounded, CheckedAdd, Num, ToPrimitive, Unsigned, Zero};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Color<T: Num> {
@@ -39,7 +39,7 @@ impl<T: Bounded + Unsigned> Color<T> {
 }
 
 impl<T> ops::Add<Color<T>> for Color<T>
-    where T: Num + Bounded + CheckedAdd + Ord
+    where T: Num + Bounded + CheckedAdd
 {
     type Output = Color<T>;
 
@@ -59,6 +59,14 @@ impl<T> ops::Add<Color<T>> for Color<T>
     }
 }
 
+impl<C: AddAssign + Num> ops::AddAssign for Color<C> {
+    fn add_assign(&mut self, Color { r, g, b }: Self) {
+        self.r += r;
+        self.g += g;
+        self.b += b;
+    }
+}
+
 impl<C: ToPrimitive + Num> ops::Mul<Color<C>> for f64 {
     type Output = Color<f64>;
 
@@ -68,14 +76,6 @@ impl<C: ToPrimitive + Num> ops::Mul<Color<C>> for f64 {
             g: self * g.to_f64().unwrap(),
             b: self * b.to_f64().unwrap(),
         }
-    }
-}
-
-impl<C: AddAssign + Num> ops::AddAssign for Color<C> {
-    fn add_assign(&mut self, Color { r, g, b }: Self) {
-        self.r += r;
-        self.g += g;
-        self.b += b;
     }
 }
 
@@ -90,7 +90,7 @@ impl From<Color<f64>> for Color<u8> {
 }
 
 impl From<Color<u8>> for Color<f64> {
-    fn from(Color { r, g, b}: Color<u8>) -> Self {
+    fn from(Color { r, g, b }: Color<u8>) -> Self {
         Color {
             r: r as f64,
             g: g as f64,

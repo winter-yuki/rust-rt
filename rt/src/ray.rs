@@ -1,45 +1,33 @@
-use approx::AbsDiffEq;
+use std::ops::Deref;
 
 use crate::scene::Camera;
+use crate::utils::NormVector;
 use crate::Vector;
 
 #[derive(Clone, Debug)]
 pub(crate) struct Ray {
-    orig: Vector,
-    dir: Vector,
+    pub(crate) orig: Vector,
+    pub(crate) dir: NormVector,
 }
 
 impl Ray {
     pub(crate) fn new(orig: Vector, dir: Vector) -> Self {
-        Ray {
-            orig,
-            dir: dir.normalize(),
-        }
+        Ray { orig, dir: NormVector::new(dir) }
     }
 
     pub(crate) fn from_cam(c: &Camera, w: f64, h: f64) -> Ray {
-        debug_assert!(c.up.norm().abs_diff_eq(&1., 1e-8));
-        debug_assert!(c.viewport_w > 0.);
-        debug_assert!(c.viewport_h > 0.);
-
         let right: Vector = c.to.cross(&c.up).normalize();
-        let left_top = &c.to - &right * (c.viewport_w / 2.) + &c.up * (c.viewport_h / 2.);
-        let dir = (left_top - &c.up * h * c.viewport_h + right * w * c.viewport_w).normalize();
+        let viewport_w = f64::from(c.viewport_w);
+        let viewport_h = f64::from(c.viewport_h);
+        let left_top = &c.to - &right * (viewport_w / 2.) + c.up.deref() * (viewport_h / 2.);
+        let dir = left_top - c.up.deref() * h * viewport_h + right * w * viewport_w;
         Ray {
             orig: Vector::from_data(c.pos.data),
-            dir,
+            dir: NormVector::new(dir),
         }
     }
 
-    pub(crate) fn orig(&self) -> &Vector {
-        &self.orig
-    }
-
-    pub(crate) fn dir(&self) -> &Vector {
-        &self.dir
-    }
-
     pub(crate) fn point(&self, t: f64) -> Vector {
-        &self.orig + t * &self.dir
+        &self.orig + t * self.dir.deref()
     }
 }

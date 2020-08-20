@@ -1,11 +1,13 @@
 use std::f64::consts::PI;
+use std::ops::Deref;
 
-use image::{Color, Image};
+use color::Color;
+use image::Image;
 
-use crate::{scene, Vector};
 use crate::objs::Touching;
 use crate::ray::Ray;
 use crate::scene::{Camera, Scene};
+use crate::Vector;
 
 pub type Logger = Box<dyn Fn(usize, usize)>;
 
@@ -41,39 +43,35 @@ impl<'a> Render<'a> {
     }
 
     pub fn render(&self) -> Image {
-        let mut img = Image::from_size(self.scene.width, self.scene.height);
-        for i_row in 0..self.scene.height {
-            (self.logger)(i_row + 1, self.scene.height);
-            for i_col in 0..self.scene.width {
+        let height = usize::from(self.scene.height);
+        let width = usize::from(self.scene.width);
+        let mut image = Image::from_size(self.scene.width, self.scene.height);
+        for i_row in 0..height {
+            (self.logger)(i_row + 1, height);
+            for i_col in 0..width {
                 let mut color = Color { r: 0., g: 0., b: 0. };
                 for _ in 0..self.antialiasing_samples_per_pixel {
-                    let h = (i_row as f64 + rand::random::<f64>() - 0.5)
-                        / (self.scene.height - 1) as f64;
-                    let w = (i_col as f64 + rand::random::<f64>() - 0.5)
-                        / (self.scene.width - 1) as f64;
+                    let h = (i_row as f64 + rand::random::<f64>() - 0.5) / (height - 1) as f64;
+                    let w = (i_col as f64 + rand::random::<f64>() - 0.5) / (width - 1) as f64;
                     let ray = Ray::from_cam(&self.scene.cam, w, h);
-                    color += self.trace(&ray);
+                    color += self.trace(&ray, self.diffuse_depth);
                 }
                 let k = 1. / self.antialiasing_samples_per_pixel as f64;
-                img[(i_row, i_col)] = Color::from(k * color);
+                image[(i_row, i_col)] = Color::from(k * color);
             }
         }
-        img
+        image
     }
 
-    fn trace(&self, r: &Ray) -> Color<f64> {
-        self.trace_helper(r, self.diffuse_depth)
-    }
-
-    fn trace_helper(&self, r: &Ray, depth: usize) -> Color<f64> {
+    fn trace(&self, r: &Ray, depth: usize) -> Color<f64> {
         if depth == 0 {
             Color { r: 0., g: 0., b: 0. }
         } else {
-            if let Some(touching) = self.touch_all(r) {
-                let p = r.point(touching.t());
-                let target = &p + touching.n() + random_unit();
+            if let Some(Touching { t, n, .. }) = self.touch_all(r) {
+                let p = r.point(*t);
+                let target = &p + n.deref() + random_unit();
                 let new_r = Ray::new(p, target - &p);
-                0.5 * self.trace_helper(&new_r, depth - 1)
+                0.6 * self.trace(&new_r, depth - 1)
             } else {
                 Color::from((self.scene.background_getter)(r))
             }
@@ -86,8 +84,8 @@ impl<'a> Render<'a> {
         let mut res = None;
         for obj in &self.scene.objs {
             if let Some(touching) = obj.touch(r) {
-                if touching.t() < t_min && touching.t() > SELF_TOUCHING_THRESHOLD {
-                    t_min = touching.t();
+                if touching.t.val() < t_min && touching.t.val() > SELF_TOUCHING_THRESHOLD {
+                    t_min = touching.t.val();
                     res = Some(touching);
                 }
             }
