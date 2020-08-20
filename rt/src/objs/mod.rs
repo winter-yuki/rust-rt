@@ -15,13 +15,13 @@ pub(crate) trait Touch {
 pub(crate) type TouchBox = Box<dyn Touch>;
 
 pub(crate) struct Touching {
-    c: Color,
+    c: Color<u8>,
     n: Vector,
     t: f64,
 }
 
 impl Touching {
-    pub(crate) fn c(&self) -> Color {
+    pub(crate) fn c(&self) -> Color<u8> {
         self.c
     }
 

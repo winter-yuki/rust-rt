@@ -11,11 +11,11 @@ use crate::Vector;
 pub(crate) struct Sphere {
     c: Vector,
     r: f64,
-    color: Color,
+    color: Color<u8>,
 }
 
 impl Sphere {
-    pub(crate) fn new(center: Vector, radius: f64, color: Color) -> Sphere {
+    pub(crate) fn new(center: Vector, radius: f64, color: Color<u8>) -> Sphere {
         assert!(radius >= 0.);
         Sphere {
             c: center,

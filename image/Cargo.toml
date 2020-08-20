@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 png = "0.16.6"
+num-traits = "0.2.12"

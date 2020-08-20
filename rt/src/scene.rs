@@ -15,7 +15,7 @@ pub struct Scene {
     pub(crate) cam: Camera,
     pub(crate) objs: Vec<TouchBox>,
     pub(crate) lights: Vec<LightBox>,
-    pub(crate) background_getter: Box<dyn Fn(&Ray) -> Color>,
+    pub(crate) background_getter: Box<dyn Fn(&Ray) -> Color<u8>>,
 }
 
 #[derive(Debug)]
