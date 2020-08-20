@@ -15,9 +15,6 @@ impl Ray {
         debug_assert!(c.viewport_w > 0.);
         debug_assert!(c.viewport_h > 0.);
 
-        debug_assert!(0. <= w && w <= 1.);
-        debug_assert!(0. <= h && h <= 1.);
-
         let right: Vector = c.to.cross(&c.up).normalize();
         let left_top = &c.to - &right * (c.viewport_w / 2.) + &c.up * (c.viewport_h / 2.);
         let dir = (left_top - &c.up * h * c.viewport_h + right * w * c.viewport_w).normalize();

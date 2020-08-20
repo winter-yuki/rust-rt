@@ -14,7 +14,6 @@ pub(crate) trait Touch {
 
 pub(crate) type TouchBox = Box<dyn Touch>;
 
-/// `||n|| == 1`
 pub(crate) struct Touching {
     c: Color,
     n: Vector,
@@ -26,6 +25,7 @@ impl Touching {
         self.c
     }
 
+    /// `||n|| == 1`
     pub(crate) fn n(&self) -> &Vector {
         &self.n
     }

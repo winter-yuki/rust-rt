@@ -30,6 +30,8 @@ pub struct Color {
     pub b: u8,
 }
 
+// impl Collect
+
 #[derive(Clone, Debug)]
 pub struct Image(Vec<Vec<Color>>);
 

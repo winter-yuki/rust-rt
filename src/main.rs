@@ -83,6 +83,9 @@ fn main() {
 fn run(args: Vec<String>, logger: Logger) -> Result<(), Error> {
     let Cli { scene_json_path, save_path } = Cli::new(&args).ok_or(Error::Cli)?;
     let scene = Scene::from_json_file(&scene_json_path)?;
-    let image = rt::render(&scene, logger);
+    let image = rt::Render::from(&scene)
+        .set_logger(logger)
+        .set_antialiasing_samples_per_pixel(4)
+        .render();
     Ok(image.write_png(&save_path)?)
 }
