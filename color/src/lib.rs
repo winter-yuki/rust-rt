@@ -12,19 +12,19 @@ pub struct Color<T: Num> {
     pub b: T,
 }
 
-impl<T: Num + Zero> Default for Color<T> {
+impl<T: Unsigned + Zero> Default for Color<T> {
     fn default() -> Self {
-        Color {
-            r: T::zero(),
-            g: T::zero(),
-            b: T::zero(),
-        }
+        Color::black()
     }
 }
 
 impl<T: Unsigned + Zero> Color<T> {
     pub fn black() -> Self {
-        Color::default()
+        Color {
+            r: T::zero(),
+            g: T::zero(),
+            b: T::zero(),
+        }
     }
 }
 
