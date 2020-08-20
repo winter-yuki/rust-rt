@@ -14,7 +14,7 @@ pub type Logger = Box<dyn Fn(usize, usize)>;
 pub struct Render<'a> {
     scene: &'a Scene,
     logger: Logger,
-    antialiasing_samples_per_pixel: usize,
+    samples_per_pixel: usize,
     diffuse_depth: usize,
 }
 
@@ -23,7 +23,7 @@ impl<'a> From<&'a Scene> for Render<'a> {
         Render {
             scene,
             logger: Box::new(|_, _| {}),
-            antialiasing_samples_per_pixel: 1,
+            samples_per_pixel: 1,
             diffuse_depth: 1,
         }
     }
@@ -34,8 +34,8 @@ impl<'a> Render<'a> {
         Render { logger, ..self }
     }
 
-    pub fn set_antialiasing_samples_per_pixel(self, n: usize) -> Self {
-        Render { antialiasing_samples_per_pixel: n, ..self }
+    pub fn set_samples_per_pixel(self, n: usize) -> Self {
+        Render { samples_per_pixel: n, ..self }
     }
 
     pub fn set_diffuse_depth(self, n: usize) -> Self {
@@ -50,13 +50,13 @@ impl<'a> Render<'a> {
             (self.logger)(i_row + 1, height);
             for i_col in 0..width {
                 let mut color = Color { r: 0., g: 0., b: 0. };
-                for _ in 0..self.antialiasing_samples_per_pixel {
+                for _ in 0..self.samples_per_pixel {
                     let h = (i_row as f64 + rand::random::<f64>() - 0.5) / (height - 1) as f64;
                     let w = (i_col as f64 + rand::random::<f64>() - 0.5) / (width - 1) as f64;
                     let ray = Ray::from_cam(&self.scene.cam, w, h);
                     color += self.trace(&ray, self.diffuse_depth);
                 }
-                let k = 1. / self.antialiasing_samples_per_pixel as f64;
+                let k = 1. / self.samples_per_pixel as f64;
                 image[(i_row, i_col)] = Color::from(k * color);
             }
         }
