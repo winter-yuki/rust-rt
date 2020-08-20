@@ -59,7 +59,7 @@ impl Default for Scene {
             },
             objs: vec![
                 Box::new(Sphere::new(
-                    Vector::new(0., 0., -3.), 2., Color { r: 0, g: 200, b: 0 },
+                    Vector::new(0., 1., -3.), 2., Color { r: 0, g: 200, b: 0 },
                 )),
                 Box::new(Sphere::new(
                     Vector::new(0., -101., -1.), 100., Color { r: 0, g: 0, b: 200 },

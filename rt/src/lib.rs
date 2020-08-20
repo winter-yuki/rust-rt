@@ -6,6 +6,9 @@ extern crate rand;
 #[macro_use]
 extern crate serde_derive;
 
+use rand::{Error, Rng};
+use rand::distributions::Standard;
+
 use image::Color;
 
 pub use crate::{

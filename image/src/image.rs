@@ -1,5 +1,6 @@
-use std::{fs, io};
-use std::ops::{Index, IndexMut};
+use std::{fs, io, ops};
+use std::cmp::min;
+use std::ops::{Add, Div, Index, IndexMut, Mul};
 use std::path::Path;
 
 pub enum Error {
@@ -30,7 +31,55 @@ pub struct Color {
     pub b: u8,
 }
 
-// impl Collect
+impl Color {
+    pub fn black() -> Color {
+        Color { r: 0, g: 0, b: 0 }
+    }
+
+    pub fn white() -> Color {
+        Color { r: 0, g: 0, b: 0 }
+    }
+}
+
+impl ops::Add<Color> for Color {
+    type Output = Color;
+
+    fn add(self, Color { r, g, b }: Color) -> Self::Output {
+        Color {
+            r: min(u8::MAX as u16, self.r as u16 + r as u16) as u8,
+            g: min(u8::MAX as u16, self.g as u16 + g as u16) as u8,
+            b: min(u8::MAX as u16, self.b as u16 + b as u16) as u8,
+        }
+    }
+}
+
+impl ops::Mul<Color> for f64 {
+    type Output = Color;
+
+    fn mul(self, Color { r, g, b }: Color) -> Self::Output {
+        Color {
+            r: (self * r as f64).round() as u8,
+            g: (self * g as f64).round() as u8,
+            b: (self * b as f64).round() as u8,
+        }
+    }
+}
+
+impl ops::Mul<f64> for Color {
+    type Output = Color;
+
+    fn mul(self, k: f64) -> Self::Output {
+        k * self
+    }
+}
+
+impl ops::Div<f64> for Color {
+    type Output = Color;
+
+    fn div(self, k: f64) -> Self::Output {
+        (1. / k) * self
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct Image(Vec<Vec<Color>>);

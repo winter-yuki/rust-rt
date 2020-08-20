@@ -10,6 +10,13 @@ pub(crate) struct Ray {
 }
 
 impl Ray {
+    pub(crate) fn new(orig: Vector, dir: Vector) -> Self {
+        Ray {
+            orig,
+            dir: dir.normalize(),
+        }
+    }
+
     pub(crate) fn from_cam(c: &Camera, w: f64, h: f64) -> Ray {
         debug_assert!(c.up.norm().abs_diff_eq(&1., 1e-8));
         debug_assert!(c.viewport_w > 0.);
@@ -30,5 +37,9 @@ impl Ray {
 
     pub(crate) fn dir(&self) -> &Vector {
         &self.dir
+    }
+
+    pub(crate) fn point(&self, t: f64) -> Vector {
+        &self.orig + t * &self.dir
     }
 }
