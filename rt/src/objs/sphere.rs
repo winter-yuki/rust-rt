@@ -1,11 +1,12 @@
 use std::cmp;
 
+use float_ord::FloatOrd;
+
 use image::Color;
 
 use crate::objs::{Touch, Touching};
 use crate::ray::Ray;
 use crate::Vector;
-use float_ord::FloatOrd;
 
 pub(crate) struct Sphere {
     c: Vector,
@@ -31,7 +32,9 @@ impl Touch for Sphere {
         let b = oc.dot(r.dir());
         let c = oc.dot(&oc) - self.r * self.r;
         let d = b * b - a * c;
-        if d <= 0. { return None; }
+        if d <= 0. {
+            return None;
+        }
 
         let root = d.sqrt();
         let t1 = (-b - root) / a;

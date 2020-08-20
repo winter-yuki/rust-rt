@@ -1,4 +1,5 @@
 use std::io;
+use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
 
 use image::Color;

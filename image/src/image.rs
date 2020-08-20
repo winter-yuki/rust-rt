@@ -57,7 +57,6 @@ impl Image {
     }
 
     pub fn w(&self) -> usize {
-        assert!(self.h() > 0);
         self.0[0].len()
     }
 
