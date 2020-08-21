@@ -6,7 +6,7 @@ use std::num::NonZeroUsize;
 use std::ops::{Index, IndexMut};
 use std::path::Path;
 
-type Color = color::Color<u8>;
+pub type Color = color::Color<u8>;
 
 pub enum Error {
     WriteIO(io::Error)
