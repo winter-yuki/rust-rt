@@ -9,13 +9,17 @@ use crate::Vector;
 pub(crate) struct NormVector(Vector);
 
 impl NormVector {
-    pub fn new(v: Vector) -> Self {
+    pub(crate) fn new(v: Vector) -> Self {
         NormVector(v.normalize())
     }
 
-    pub fn new_unchecked(v: Vector) -> Self {
+    pub(crate) fn new_unchecked(v: Vector) -> Self {
         debug_assert!(v.norm().abs_diff_eq(&1., 1e-5));
         NormVector(v)
+    }
+
+    pub(crate) fn get(&self) -> &Vector {
+        &self.0
     }
 }
 

@@ -21,7 +21,7 @@ impl Touch for Sphere {
 
         let a = dir.dot(dir);
         let b = oc.dot(dir);
-        let c = oc.dot(&oc) - self.radius.val() * self.radius.val();
+        let c = oc.dot(&oc) - self.radius.get() * self.radius.get();
         let d = b * b - a * c;
         if d <= 0. {
             return None;

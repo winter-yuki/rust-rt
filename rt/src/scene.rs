@@ -1,6 +1,5 @@
 use std::io;
 use std::num::NonZeroUsize;
-use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
@@ -90,7 +89,7 @@ impl Default for Scene {
                 }),
             ],
             background_getter: Box::new(|Ray { dir, .. }| {
-                let t = 0.5 * (dir.deref() + Vector::new(1., 1., 1.));
+                let t = 0.5 * (dir.get() + Vector::new(1., 1., 1.));
                 let r = 255. * (1. - t[0] * 0.5);
                 let g = 255. * (1. - t[1] * 0.7);
                 let b = 255. * (1. - t[2] * 1.0);

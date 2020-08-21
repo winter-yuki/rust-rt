@@ -77,8 +77,8 @@ impl<'a> Render<'a> {
         let mut res = None;
         for obj in &self.scene.objs {
             if let Some(touching) = obj.touch(r) {
-                if touching.t.val() < t_min && touching.t.val() > SELF_TOUCHING_THRESHOLD {
-                    t_min = touching.t.val();
+                if touching.t.get() < t_min && touching.t.get() > SELF_TOUCHING_THRESHOLD {
+                    t_min = touching.t.get();
                     res = Some(touching);
                 }
             }

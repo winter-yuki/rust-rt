@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use image::Color;
 
 use crate::objs::{Material, Scatter, Touching};
@@ -23,7 +21,7 @@ impl Material for Metal {
                 attenuation: self.albedo,
                 scattered: Ray {
                     orig: clone_vec(p),
-                    dir: NormVector::new(reflected.deref() + self.fuzz.val() * random_unit()),
+                    dir: NormVector::new(reflected.get() + self.fuzz.get() * random_unit()),
                 },
             })
         } else {

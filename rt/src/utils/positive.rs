@@ -14,7 +14,7 @@ impl<T: Signed + PartialOrd + Zero + Copy> Positive<T> {
         }
     }
 
-    pub fn val(&self) -> T {
+    pub fn get(&self) -> T {
         self.0
     }
 }

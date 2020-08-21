@@ -15,7 +15,7 @@ impl<T: Float + FromPrimitive> UniFloat<T> {
         }
     }
 
-    pub(crate) fn val(&self) -> T {
+    pub(crate) fn get(&self) -> T {
         self.0
     }
 }

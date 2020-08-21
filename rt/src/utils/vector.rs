@@ -1,5 +1,4 @@
 use std::f64::consts::PI;
-use std::ops::Deref;
 
 use crate::utils::NormVector;
 use crate::Vector;
@@ -16,7 +15,7 @@ pub(crate) fn random_unit() -> Vector {
 }
 
 pub(crate) fn reflect(v: &NormVector, n: &NormVector) -> NormVector {
-    NormVector::new(v.deref() - 2. * v.dot(n) * n.deref())
+    NormVector::new(v.get() - 2. * v.dot(n) * n.get())
 }
 
 pub(crate) fn clone_vec(v: &Vector) -> Vector {

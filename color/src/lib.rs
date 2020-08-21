@@ -44,17 +44,18 @@ impl<T> ops::Add<Color<T>> for Color<T>
     type Output = Color<T>;
 
     fn add(self, Color { r, g, b }: Self) -> Self::Output {
+        return Color {
+            r: add_helper(self.r, r),
+            g: add_helper(self.g, g),
+            b: add_helper(self.b, b),
+        };
+
         fn add_helper<T: CheckedAdd + Bounded>(x: T, y: T) -> T {
             if let Some(v) = x.checked_add(&y) {
                 v
             } else {
                 T::max_value()
             }
-        }
-        Color {
-            r: add_helper(self.r, r),
-            g: add_helper(self.g, g),
-            b: add_helper(self.b, b),
         }
     }
 }

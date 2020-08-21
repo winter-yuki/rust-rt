@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use image::Color;
 
 use crate::objs::{Material, Scatter, Touching};
@@ -16,7 +14,7 @@ impl Material for Lambertian {
             attenuation: self.albedo,
             scattered: Ray {
                 orig: clone_vec(p),
-                dir: NormVector::new(normal.deref() + random_unit()),
+                dir: NormVector::new(normal.get() + random_unit()),
             },
         })
     }
