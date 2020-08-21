@@ -1,5 +1,5 @@
 target
-render.png
+*.png
 
 # Created by https://www.toptal.com/developers/gitignore/api/rust,clion
 # Edit at https://www.toptal.com/developers/gitignore?templates=rust,clion

@@ -4,9 +4,10 @@ use std::ops::Deref;
 use color::Color;
 use image::Image;
 
-use crate::objs::Touching;
+use crate::objs::{Scatter, Touching};
 use crate::ray::Ray;
-use crate::scene::{Camera, Scene};
+use crate::scene::Scene;
+use crate::utils::random_unit;
 use crate::Vector;
 
 pub type Logger = Box<dyn Fn(usize, usize)>;
@@ -62,17 +63,16 @@ impl<'a> Render<'a> {
     }
 
     fn trace(&self, r: &Ray, depth: usize) -> Color<f64> {
-        if depth == 0 {
-            Color { r: 0., g: 0., b: 0. }
-        } else {
-            if let Some(Touching { t, n, .. }) = self.touch_all(r) {
-                let p = r.point(*t);
-                let target = &p + n.deref() + random_unit();
-                let new_r = Ray::new(p, target - &p);
-                0.6 * self.trace(&new_r, depth - 1)
+        if depth == 0 { return Color { r: 0., g: 0., b: 0. }; }
+        if let Some(touching) = self.touch_all(r) {
+            if let Some(scatter) = touching.material.scatter(r, &touching) {
+                let a: Color<f64> = Color::from(scatter.attenuation);
+                (1. / 255.) * a * self.trace(&scatter.scattered, depth - 1)
             } else {
-                Color::from((self.scene.background_getter)(r))
+                Color { r: 0., g: 0., b: 0. }
             }
+        } else {
+            Color::from((self.scene.background_getter)(r))
         }
     }
 
@@ -90,15 +90,4 @@ impl<'a> Render<'a> {
         }
         res
     }
-}
-
-fn random_unit() -> Vector {
-    let a = 2. * PI * rand::random::<f64>();
-    let z = -1. + 2. * rand::random::<f64>();
-    let r = (1. - z * z).sqrt();
-    Vector::new(
-        r * a.cos(),
-        r * a.sin(),
-        z,
-    )
 }

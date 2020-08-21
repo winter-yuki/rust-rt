@@ -2,11 +2,11 @@ use std::io;
 use std::num::NonZeroUsize;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
+use std::rc::Rc;
 
 use color::Color;
 
-use crate::light::{Ambient, LightBox};
-use crate::objs::{Sphere, TouchBox};
+use crate::objs::{Lambertian, Metal, Sphere, TouchBox};
 use crate::ray::Ray;
 use crate::utils::{NormVector, Positive};
 use crate::Vector;
@@ -16,7 +16,6 @@ pub struct Scene {
     pub(crate) height: NonZeroUsize,
     pub(crate) cam: Camera,
     pub(crate) objs: Vec<TouchBox>,
-    pub(crate) lights: Vec<LightBox>,
     pub(crate) background_getter: Box<dyn Fn(&Ray) -> Color<u8>>,
 }
 
@@ -60,14 +59,35 @@ impl Default for Scene {
                 viewport_w: Positive::new(viewport_h * aspect_ratio).unwrap(),
             },
             objs: vec![
-                Box::new(Sphere::new(
-                    Vector::new(0., 1., -5.), 2., Color { r: 0, g: 200, b: 0 },
-                )),
-                Box::new(Sphere::new(
-                    Vector::new(0., -101., -1.), 100., Color { r: 0, g: 0, b: 200 },
-                ))
+                Box::new(Sphere {
+                    center: Vector::new(0., 1., -5.),
+                    radius: Positive::new(2.).unwrap(),
+                    material: Rc::new(Lambertian {
+                        albedo: Color { g: 200, ..Color::black() }
+                    }),
+                }),
+                Box::new(Sphere {
+                    center: Vector::new(-3., 1., -5.),
+                    radius: Positive::new(2.).unwrap(),
+                    material: Rc::new(Lambertian {
+                        albedo: Color { r: 200, ..Color::black() }
+                    }),
+                }),
+                Box::new(Sphere {
+                    center: Vector::new(5., 1., -6.),
+                    radius: Positive::new(2.).unwrap(),
+                    material: Rc::new(Lambertian {
+                        albedo: Color { b: 255, ..Color::black() }
+                    }),
+                }),
+                Box::new(Sphere {
+                    center: Vector::new(0., -101., -1.),
+                    radius: Positive::new(100.).unwrap(),
+                    material: Rc::new(Lambertian {
+                        albedo: Color { b: 200, ..Color::black() }
+                    }),
+                }),
             ],
-            lights: vec![Box::new(Ambient)],
             background_getter: Box::new(|Ray { dir, .. }| {
                 let t = 0.5 * (dir.deref() + Vector::new(1., 1., 1.));
                 let r = 255. * (1. - t[0] * 0.5);

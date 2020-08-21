@@ -15,7 +15,6 @@ pub use crate::{
 
 pub mod scene;
 
-mod light;
 mod objs;
 mod render;
 mod ray;
