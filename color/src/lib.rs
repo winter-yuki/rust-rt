@@ -1,9 +1,9 @@
 extern crate num_traits;
 
 use std::ops;
-use std::ops::AddAssign;
+use std::ops::{AddAssign, Mul};
 
-use num_traits::{Bounded, CheckedAdd, Num, ToPrimitive, Unsigned, Zero};
+use num_traits::{Bounded, CheckedAdd, Float, Num, ToPrimitive, Unsigned, Zero};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Color<T: Num> {
@@ -59,7 +59,7 @@ impl<T> ops::Add<Color<T>> for Color<T>
     }
 }
 
-impl<C: AddAssign + Num> ops::AddAssign for Color<C> {
+impl<C: AddAssign + Float> ops::AddAssign for Color<C> {
     fn add_assign(&mut self, Color { r, g, b }: Self) {
         self.r += r;
         self.g += g;
@@ -75,6 +75,18 @@ impl<C: ToPrimitive + Num> ops::Mul<Color<C>> for f64 {
             r: self * r.to_f64().unwrap(),
             g: self * g.to_f64().unwrap(),
             b: self * b.to_f64().unwrap(),
+        }
+    }
+}
+
+impl<T: Mul + Float> ops::Mul for Color<T> {
+    type Output = Color<T>;
+
+    fn mul(self, Color { r, g, b }: Self) -> Self::Output {
+        Color {
+            r: self.r * r,
+            g: self.g * g,
+            b: self.b * b,
         }
     }
 }
