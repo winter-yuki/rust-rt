@@ -18,8 +18,8 @@ pub struct Render<'a> {
     diffuse_depth: usize,
 }
 
-impl<'a> From<&'a Scene> for Render<'a> {
-    fn from(scene: &'a Scene) -> Self {
+impl<'a> Render<'a> {
+    pub fn new(scene: &'a Scene) -> Self {
         Render {
             scene,
             logger: Box::new(|_, _| {}),
@@ -27,18 +27,16 @@ impl<'a> From<&'a Scene> for Render<'a> {
             diffuse_depth: 1,
         }
     }
-}
 
-impl<'a> Render<'a> {
-    pub fn set_logger(self, logger: Logger) -> Self {
+    pub fn logger(self, logger: Logger) -> Self {
         Render { logger, ..self }
     }
 
-    pub fn set_samples_per_pixel(self, n: usize) -> Self {
+    pub fn samples_per_pixel(self, n: usize) -> Self {
         Render { samples_per_pixel: n, ..self }
     }
 
-    pub fn set_diffuse_depth(self, n: usize) -> Self {
+    pub fn diffuse_depth(self, n: usize) -> Self {
         Render { diffuse_depth: n, ..self }
     }
 

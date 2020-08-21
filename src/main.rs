@@ -4,6 +4,7 @@ extern crate serde_json;
 
 use std::{env, io, process};
 use std::path::PathBuf;
+use std::thread::Thread;
 
 use rt::Logger;
 use rt::scene;
@@ -83,10 +84,10 @@ fn main() {
 fn run(args: Vec<String>, logger: Logger) -> Result<(), Error> {
     let Cli { scene_json_path, save_path } = Cli::new(&args).ok_or(Error::Cli)?;
     let scene = Scene::from_json_file(&scene_json_path)?;
-    let image = rt::Render::from(&scene)
-        .set_logger(logger)
-        .set_samples_per_pixel(500)
-        .set_diffuse_depth(100)
+    let image = rt::Render::new(&scene)
+        .logger(logger)
+        .samples_per_pixel(500)
+        .diffuse_depth(100)
         .render();
     Ok(image.write_png(&save_path)?)
 }
