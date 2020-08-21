@@ -8,7 +8,7 @@ use color::Color;
 
 use crate::objs::{Lambertian, Metal, Sphere, TouchBox};
 use crate::ray::Ray;
-use crate::utils::{NormVector, Positive};
+use crate::utils::{NormVector, Positive, UniFloat};
 use crate::Vector;
 
 pub struct Scene {
@@ -60,10 +60,10 @@ impl Default for Scene {
             },
             objs: vec![
                 Box::new(Sphere {
-                    center: Vector::new(0., 1., -5.),
+                    center: Vector::new(0., -1., -5.),
                     radius: Positive::new(2.).unwrap(),
                     material: Rc::new(Lambertian {
-                        albedo: Color { g: 200, ..Color::black() }
+                        albedo: Color { g: 200, b: 255, ..Color::black() }
                     }),
                 }),
                 Box::new(Sphere {
@@ -74,17 +74,18 @@ impl Default for Scene {
                     }),
                 }),
                 Box::new(Sphere {
-                    center: Vector::new(5., 1., -6.),
+                    center: Vector::new(5., 0., -6.),
                     radius: Positive::new(2.).unwrap(),
-                    material: Rc::new(Lambertian {
-                        albedo: Color { b: 255, ..Color::black() }
+                    material: Rc::new(Metal {
+                        albedo: Color { b: 200, r: 200, g: 200 },
+                        fuzz: UniFloat::new(0.3).unwrap(),
                     }),
                 }),
                 Box::new(Sphere {
-                    center: Vector::new(0., -101., -1.),
+                    center: Vector::new(0., -101., -5.),
                     radius: Positive::new(100.).unwrap(),
                     material: Rc::new(Lambertian {
-                        albedo: Color { b: 200, ..Color::black() }
+                        albedo: Color { b: 200, r: 200, ..Color::black() }
                     }),
                 }),
             ],
