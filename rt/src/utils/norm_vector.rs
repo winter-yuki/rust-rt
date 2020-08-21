@@ -9,12 +9,6 @@ use crate::Vector;
 pub(crate) struct NormVector(Vector);
 
 impl NormVector {
-    pub(crate) fn val(&self) -> &Vector {
-        &self.0
-    }
-}
-
-impl NormVector {
     pub fn new(v: Vector) -> Self {
         NormVector(v.normalize())
     }

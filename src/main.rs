@@ -4,7 +4,6 @@ extern crate serde_json;
 
 use std::{env, io, process};
 use std::path::PathBuf;
-use std::thread::Thread;
 
 use rt::Logger;
 use rt::scene;

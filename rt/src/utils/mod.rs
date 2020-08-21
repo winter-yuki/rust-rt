@@ -1,8 +1,8 @@
 pub(crate) use {
     norm_vector::*,
     positive::*,
-    vector::*,
     uni_float::*,
+    vector::*,
 };
 
 mod norm_vector;

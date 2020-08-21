@@ -1,14 +1,9 @@
-use std::f64::consts::PI;
-use std::ops::Deref;
-
 use color::Color;
 use image::Image;
 
-use crate::objs::{Scatter, Touching};
+use crate::objs::Touching;
 use crate::ray::Ray;
 use crate::scene::Scene;
-use crate::utils::random_unit;
-use crate::Vector;
 
 pub type Logger = Box<dyn Fn(usize, usize)>;
 

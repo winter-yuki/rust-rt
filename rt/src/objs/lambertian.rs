@@ -5,7 +5,6 @@ use image::Color;
 use crate::objs::{Material, Scatter, Touching};
 use crate::ray::Ray;
 use crate::utils::{clone_vec, NormVector, random_unit};
-use crate::Vector;
 
 pub(crate) struct Lambertian {
     pub albedo: Color
