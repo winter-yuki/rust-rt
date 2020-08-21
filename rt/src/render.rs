@@ -24,16 +24,19 @@ impl<'a> Render<'a> {
         }
     }
 
-    pub fn logger(self, logger: Logger) -> Self {
-        Render { logger, ..self }
+    pub fn logger(mut self, logger: Logger) -> Self {
+        self.logger = logger;
+        self
     }
 
-    pub fn samples_per_pixel(self, n: usize) -> Self {
-        Render { samples_per_pixel: n, ..self }
+    pub fn samples_per_pixel(mut self, n: usize) -> Self {
+        self.samples_per_pixel = n;
+        self
     }
 
-    pub fn diffuse_depth(self, n: usize) -> Self {
-        Render { diffuse_depth: n, ..self }
+    pub fn diffuse_depth(mut self, n: usize) -> Self {
+        self.diffuse_depth = n;
+        self
     }
 
     pub fn render(&self) -> Image {
