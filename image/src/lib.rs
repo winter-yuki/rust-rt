@@ -71,6 +71,11 @@ impl Image {
         }
         res
     }
+
+    pub fn set_row(&mut self, index: usize, row: Vec<Color>) -> &mut Self {
+        self.0[index] = row;
+        self
+    }
 }
 
 impl From<Vec<Vec<Color>>> for Image {

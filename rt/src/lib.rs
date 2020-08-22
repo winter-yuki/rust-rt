@@ -5,6 +5,7 @@ extern crate image;
 extern crate nalgebra as na;
 extern crate num_traits;
 extern crate rand;
+extern crate rayon;
 #[macro_use]
 extern crate serde_derive;
 

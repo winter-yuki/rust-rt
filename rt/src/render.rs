@@ -1,3 +1,5 @@
+use rayon::prelude::*;
+
 use color::Color;
 use image::Image;
 
@@ -40,24 +42,31 @@ impl<'a> Render<'a> {
     }
 
     pub fn render(&self) -> Image {
-        let height = usize::from(self.scene.height);
-        let width = usize::from(self.scene.width);
+        let height = self.scene.height.get();
+        let width = self.scene.width.get();
         let mut image = Image::from_size(self.scene.width, self.scene.height);
         for i_row in 0..height {
             (self.logger)(i_row + 1, height);
-            for i_col in 0..width {
-                let mut color = Color { r: 0., g: 0., b: 0. };
-                for _ in 0..self.samples_per_pixel {
-                    let h = (i_row as f64 + rand::random::<f64>() - 0.5) / (height - 1) as f64;
-                    let w = (i_col as f64 + rand::random::<f64>() - 0.5) / (width - 1) as f64;
-                    let ray = Ray::from_cam(&self.scene.cam, w, h);
-                    color += self.trace(&ray, self.diffuse_depth);
-                }
-                let k = 1. / self.samples_per_pixel as f64;
-                image[(i_row, i_col)] = Color::from(k * color);
-            }
+            let row = self.render_row(i_row, height, width);
+            image.set_row(i_row, row);
         }
         image
+    }
+
+    fn render_row(&self, i_row: usize, height: usize, width: usize) -> Vec<image::Color> {
+        let mut row = Vec::with_capacity(width);
+        for i_col in 0..width {
+            let mut color = Color { r: 0., g: 0., b: 0. };
+            for _ in 0..self.samples_per_pixel {
+                let h = (i_row as f64 + rand::random::<f64>() - 0.5) / (height - 1) as f64;
+                let w = (i_col as f64 + rand::random::<f64>() - 0.5) / (width - 1) as f64;
+                let ray = Ray::from_cam(&self.scene.cam, w, h);
+                color += self.trace(&ray, self.diffuse_depth);
+            }
+            let k = 1. / self.samples_per_pixel as f64;
+            row.push(Color::from(k * color));
+        }
+        row
     }
 
     fn trace(&self, r: &Ray, depth: usize) -> Color<f64> {
@@ -65,7 +74,7 @@ impl<'a> Render<'a> {
         if let Some(touching) = self.touch_all(r) {
             if let Some(scatter) = touching.material.scatter(r, &touching) {
                 let a: Color<f64> = Color::from(scatter.attenuation);
-                (1. / 255.) * a * self.trace(&scatter.scattered, depth - 1)
+                (1. / u8::MAX as f64) * a * self.trace(&scatter.scattered, depth - 1)
             } else {
                 Color { r: 0., g: 0., b: 0. }
             }
