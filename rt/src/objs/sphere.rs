@@ -1,9 +1,9 @@
 use std::cmp;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use float_ord::FloatOrd;
 
-use crate::objs::{Material, Touch, Touching};
+use crate::objs::{MaterialArc, Touch, Touching};
 use crate::ray::Ray;
 use crate::utils::{NormVector, Positive};
 use crate::Vector;
@@ -11,7 +11,7 @@ use crate::Vector;
 pub(crate) struct Sphere {
     pub(crate) center: Vector,
     pub(crate) radius: Positive<f64>,
-    pub(crate) material: Rc<dyn Material>,
+    pub(crate) material: MaterialArc,
 }
 
 impl Touch for Sphere {
@@ -36,7 +36,7 @@ impl Touch for Sphere {
                 normal: NormVector::new(orig - &self.center),
                 p: r.point(t),
                 t: Positive::new(t).unwrap(),
-                material: Rc::clone(&self.material),
+                material: Arc::clone(&self.material),
             })
         } else {
             None

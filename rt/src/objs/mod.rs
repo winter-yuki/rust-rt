@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub(crate) use {
     lambertian::*,
@@ -19,13 +19,13 @@ pub(crate) trait Touch {
     fn touch(&self, r: &Ray) -> Option<Touching>;
 }
 
-pub(crate) type TouchBox = Box<dyn Touch>;
+pub(crate) type TouchBox = Box<dyn Touch + Send + Sync + 'static>;
 
 pub(crate) struct Touching {
     pub(crate) p: Vector,
     pub(crate) t: Positive<f64>,
     pub(crate) normal: NormVector,
-    pub(crate) material: Rc<dyn Material>,
+    pub(crate) material: MaterialArc,
 }
 
 pub(crate) struct Scatter {
@@ -36,3 +36,5 @@ pub(crate) struct Scatter {
 pub(crate) trait Material {
     fn scatter(&self, r: &Ray, t: &Touching) -> Option<Scatter>;
 }
+
+pub(crate) type MaterialArc = Arc<dyn Material + Send + Sync + 'static>;

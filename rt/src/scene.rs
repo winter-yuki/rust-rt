@@ -1,7 +1,7 @@
 use std::io;
 use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
-use std::rc::Rc;
+use std::sync::Arc;
 
 use color::Color;
 
@@ -15,7 +15,7 @@ pub struct Scene {
     pub(crate) height: NonZeroUsize,
     pub(crate) cam: Camera,
     pub(crate) objs: Vec<TouchBox>,
-    pub(crate) background_getter: Box<dyn Fn(&Ray) -> Color<u8>>,
+    pub(crate) background_getter: Box<dyn Fn(&Ray) -> Color<u8> + Send + Sync + 'static>,
 }
 
 #[derive(Debug)]
@@ -61,21 +61,21 @@ impl Default for Scene {
                 Box::new(Sphere {
                     center: Vector::new(0., -1., -5.),
                     radius: Positive::new(2.).unwrap(),
-                    material: Rc::new(Lambertian {
+                    material: Arc::new(Lambertian {
                         albedo: Color { g: 200, b: 255, ..Color::black() }
                     }),
                 }),
                 Box::new(Sphere {
                     center: Vector::new(-3., 1., -5.),
                     radius: Positive::new(2.).unwrap(),
-                    material: Rc::new(Lambertian {
+                    material: Arc::new(Lambertian {
                         albedo: Color { r: 200, ..Color::black() }
                     }),
                 }),
                 Box::new(Sphere {
                     center: Vector::new(5., 0., -6.),
                     radius: Positive::new(2.).unwrap(),
-                    material: Rc::new(Metal {
+                    material: Arc::new(Metal {
                         albedo: Color { b: 200, r: 200, g: 200 },
                         fuzz: UniFloat::new(0.3).unwrap(),
                     }),
@@ -83,7 +83,7 @@ impl Default for Scene {
                 Box::new(Sphere {
                     center: Vector::new(0., -101., -5.),
                     radius: Positive::new(100.).unwrap(),
-                    material: Rc::new(Lambertian {
+                    material: Arc::new(Lambertian {
                         albedo: Color { b: 200, r: 200, ..Color::black() }
                     }),
                 }),

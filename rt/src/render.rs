@@ -7,7 +7,7 @@ use crate::objs::Touching;
 use crate::ray::Ray;
 use crate::scene::Scene;
 
-pub type Logger = Box<dyn Fn(usize, usize)>;
+pub type Logger = Box<dyn Fn(usize, usize) + Send + Sync + 'static>;
 
 pub struct Render<'a> {
     scene: &'a Scene,
@@ -44,13 +44,15 @@ impl<'a> Render<'a> {
     pub fn render(&self) -> Image {
         let height = self.scene.height.get();
         let width = self.scene.width.get();
-        let mut image = Image::from_size(self.scene.width, self.scene.height);
-        for i_row in 0..height {
-            (self.logger)(i_row + 1, height);
-            let row = self.render_row(i_row, height, width);
-            image.set_row(i_row, row);
-        }
+        let mut image = vec![Vec::new(); height];
         image
+            .par_iter_mut()
+            .enumerate()
+            .for_each(|(i_row, row)| {
+                *row = self.render_row(i_row, height, width);
+                (self.logger)(i_row, height);
+            });
+        Image::from(image)
     }
 
     fn render_row(&self, i_row: usize, height: usize, width: usize) -> Vec<image::Color> {

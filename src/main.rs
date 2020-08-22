@@ -4,6 +4,7 @@ extern crate serde_json;
 
 use std::{env, io, process};
 use std::path::PathBuf;
+use std::sync::atomic::AtomicUsize;
 
 use rt::Logger;
 use rt::scene;
@@ -52,7 +53,7 @@ impl From<image::Error> for Error {
 
 fn main() {
     let args: Vec<_> = env::args().collect();
-    let logger = Box::new(|i, n| println!("Progress {} of {}", i, n));
+    let logger = Box::new(|i, _| println!("Rendered {} row", i));
     let res = run(args, logger);
     match res {
         Ok(()) => println!("Finished!"),
