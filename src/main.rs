@@ -3,8 +3,9 @@ extern crate rt;
 extern crate serde_json;
 
 use std::{env, io, process};
+use std::io::Write;
 use std::path::PathBuf;
-use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use rt::Logger;
 use rt::scene;
@@ -53,7 +54,13 @@ impl From<image::Error> for Error {
 
 fn main() {
     let args: Vec<_> = env::args().collect();
-    let logger = Box::new(|i, _| println!("Rendered {} row", i));
+    let process = AtomicUsize::new(0);
+    let logger = Box::new(move |_, _| {
+        if process.fetch_add(1, Ordering::SeqCst) % 10 == 0 {
+            print!(".");
+            io::stdout().flush().unwrap();
+        }
+    });
     let res = run(args, logger);
     match res {
         Ok(()) => println!("Finished!"),

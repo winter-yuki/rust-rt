@@ -7,7 +7,9 @@ use crate::objs::Touching;
 use crate::ray::Ray;
 use crate::scene::Scene;
 
-pub type Logger = Box<dyn Fn(usize, usize) + Send + Sync + 'static>;
+pub type Current = usize;
+pub type Total = usize;
+pub type Logger = Box<dyn Fn(Current, Total) + Send + Sync + 'static>;
 
 pub struct Render<'a> {
     scene: &'a Scene,
