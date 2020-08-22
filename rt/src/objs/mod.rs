@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-pub(crate) use {
-    lambertian::*,
-    metal::*,
-    sphere::*,
+pub use {
+    lambertian::Lambertian,
+    metal::Metal,
+    sphere::{Sphere, SphereBuilder},
 };
 use image::Color;
 

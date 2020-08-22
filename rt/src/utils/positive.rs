@@ -3,7 +3,7 @@ use std::ops::{Deref, DerefMut};
 use num_traits::{Signed, Zero};
 
 #[derive(Debug, Default, Copy, Clone)]
-pub(crate) struct Positive<T: Signed>(T);
+pub struct Positive<T: Signed>(T);
 
 impl<T: Signed + PartialOrd + Zero + Copy> Positive<T> {
     pub fn new(x: T) -> Option<Self> {

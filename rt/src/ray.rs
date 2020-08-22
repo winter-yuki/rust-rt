@@ -3,9 +3,9 @@ use crate::utils::{clone_vec, NormVector, Positive};
 use crate::Vector;
 
 #[derive(Clone, Debug)]
-pub(crate) struct Ray {
-    pub(crate) orig: Vector,
-    pub(crate) dir: NormVector,
+pub struct Ray {
+    pub orig: Vector,
+    pub dir: NormVector,
 }
 
 impl Ray {

@@ -6,19 +6,19 @@ use crate::utils::clone_vec;
 use crate::Vector;
 
 #[derive(Debug)]
-pub(crate) struct NormVector(Vector);
+pub struct NormVector(Vector);
 
 impl NormVector {
-    pub(crate) fn new(v: Vector) -> Self {
+    pub fn new(v: Vector) -> Self {
         NormVector(v.normalize())
     }
 
-    pub(crate) fn new_unchecked(v: Vector) -> Self {
+    pub fn new_unchecked(v: Vector) -> Self {
         debug_assert!(v.norm().abs_diff_eq(&1., 1e-5));
         NormVector(v)
     }
 
-    pub(crate) fn get(&self) -> &Vector {
+    pub fn get(&self) -> &Vector {
         &self.0
     }
 }

@@ -1,7 +1,9 @@
+pub use {
+    norm_vector::NormVector,
+    positive::Positive,
+    uni_float::UniFloat,
+};
 pub(crate) use {
-    norm_vector::*,
-    positive::*,
-    uni_float::*,
     vector::*,
 };
 

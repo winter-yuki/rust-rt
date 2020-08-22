@@ -3,15 +3,65 @@ use std::sync::Arc;
 
 use float_ord::FloatOrd;
 
+use crate::{Lambertian, Metal, Vector};
 use crate::objs::{MaterialArc, Touch, Touching};
 use crate::ray::Ray;
 use crate::utils::{NormVector, Positive};
-use crate::Vector;
 
-pub(crate) struct Sphere {
+pub struct Sphere {
     pub(crate) center: Vector,
     pub(crate) radius: Positive<f64>,
     pub(crate) material: MaterialArc,
+}
+
+impl Sphere {
+    pub fn new() -> SphereBuilder {
+        SphereBuilder::new()
+    }
+}
+
+pub struct SphereBuilder {
+    center: Option<Vector>,
+    radius: Option<Positive<f64>>,
+    material: Option<MaterialArc>,
+}
+
+impl SphereBuilder {
+    pub fn new() -> Self {
+        SphereBuilder {
+            center: None,
+            radius: None,
+            material: None,
+        }
+    }
+
+    pub fn center(mut self, center: Vector) -> Self {
+        self.center = Some(center);
+        self
+    }
+
+    pub fn radius(mut self, radius: Positive<f64>) -> Self {
+        self.radius = Some(radius);
+        self
+    }
+
+    pub fn metal(mut self, metal: Metal) -> Self {
+        self.material = Some(Arc::new(metal));
+        self
+    }
+
+    pub fn lambertian(mut self, lambertian: Lambertian) -> Self {
+        self.material = Some(Arc::new(lambertian));
+        self
+    }
+
+    pub fn build(self) -> Sphere {
+        Sphere {
+            center: self.center.unwrap(),
+            radius: self.radius.unwrap(),
+            material: self.material.unwrap(),
+        }
+    }
 }
 
 impl Touch for Sphere {

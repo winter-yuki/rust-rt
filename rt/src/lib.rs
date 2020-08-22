@@ -8,15 +8,18 @@ extern crate rand;
 extern crate rayon;
 
 pub use crate::{
+    objs::{Lambertian, Metal, Sphere, SphereBuilder},
+    ray::Ray,
     render::Logger,
     render::Render,
+    scene::{Camera, Scene, SceneBuilder},
+    utils::*,
 };
 
-pub mod scene;
-
+mod scene;
 mod objs;
 mod render;
 mod ray;
 mod utils;
 
-type Vector = na::Vector3<f64>;
+pub type Vector = na::Vector3<f64>;
