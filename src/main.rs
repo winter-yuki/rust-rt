@@ -1,6 +1,5 @@
 extern crate image;
 extern crate rt;
-extern crate serde_json;
 
 use std::{env, io, process};
 use std::io::Write;
@@ -8,19 +7,16 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use rt::Logger;
-use rt::scene;
 use rt::scene::Scene;
 
 struct Cli {
-    scene_json_path: PathBuf,
     save_path: PathBuf,
 }
 
 impl Cli {
     fn new(args: &[String]) -> Option<Cli> {
         match args {
-            [_, jp, sp] => Some(Cli {
-                scene_json_path: PathBuf::from(jp),
+            [_, sp] => Some(Cli {
                 save_path: PathBuf::from(sp),
             }),
             _ => None
@@ -30,18 +26,7 @@ impl Cli {
 
 enum Error {
     Cli,
-    ConfIO(io::Error),
-    ConfParse(serde_json::Error),
     ImgWriteIO(io::Error),
-}
-
-impl From<scene::Error> for Error {
-    fn from(e: scene::Error) -> Error {
-        match e {
-            scene::Error::ConfReadIO(e) => Error::ConfIO(e),
-            scene::Error::ConfSerde(e) => Error::ConfParse(e),
-        }
-    }
 }
 
 impl From<image::Error> for Error {
@@ -66,19 +51,8 @@ fn main() {
         Ok(()) => println!("Finished!"),
         Err(e) => match e {
             Error::Cli => {
-                eprintln!(
-                    "Only two args should be passed: \
-                     path to json config and render save path"
-                );
+                eprintln!("Only one arg should be passed: render save path");
                 process::exit(exitcode::NOINPUT)
-            }
-            Error::ConfIO(e) => {
-                eprintln!("Error while reading json config: {}", e);
-                process::exit(exitcode::IOERR)
-            }
-            Error::ConfParse(e) => {
-                eprintln!("Error while parsing config: {}", e);
-                process::exit(exitcode::CONFIG)
             }
             Error::ImgWriteIO(e) => {
                 eprintln!("Error while writing rendered image to file: {}", e);
@@ -89,8 +63,8 @@ fn main() {
 }
 
 fn run(args: Vec<String>, logger: Logger) -> Result<(), Error> {
-    let Cli { scene_json_path, save_path } = Cli::new(&args).ok_or(Error::Cli)?;
-    let scene = Scene::from_json_file(&scene_json_path)?;
+    let Cli { save_path } = Cli::new(&args).ok_or(Error::Cli)?;
+    let scene = Scene::default();
     let image = rt::Render::new(&scene)
         .logger(logger)
         .samples_per_pixel(1000)

@@ -1,6 +1,4 @@
-use std::io;
 use std::num::NonZeroUsize;
-use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use color::Color;
@@ -27,20 +25,6 @@ pub(crate) struct Camera {
     pub(crate) aspect_ratio: Positive<f64>,
 }
 
-pub enum Error {
-    ConfReadIO(io::Error),
-    ConfSerde(serde_json::Error),
-}
-
-type Result<T> = std::result::Result<T, Error>;
-
-impl Scene {
-    pub fn from_json_file(_path: &Path) -> Result<Scene> {
-        // TODO
-        Ok(Scene::default())
-    }
-}
-
 impl Default for Scene {
     fn default() -> Self {
         let aspect_ratio = 16. / 9.;
@@ -49,7 +33,7 @@ impl Default for Scene {
             width: NonZeroUsize::new(width).unwrap(),
             height: NonZeroUsize::new((width as f64 / aspect_ratio).round() as usize).unwrap(),
             cam: Camera {
-                pos: Vector::new(0., 2., 2.),
+                pos: Vector::new(0., 1., 1.),
                 up: NormVector::new(Vector::new(0., 1., 0.)),
                 to: Vector::new(0., 0., -1.),
                 vfov: Positive::new(90.).unwrap(),
@@ -100,72 +84,3 @@ impl Default for Scene {
         }
     }
 }
-
-//     pub fn from_json(json: &str) -> serde_json::Result<Scene> {
-//         let scene: Value = serde_json::from_str(json)?;
-//         // TODO Ok(Scene {
-//         //     width: Self::get_width(&scene)?,
-//         //     height: Self::get_height(&scene)?,
-//         //     save_path: Self::get_path(&scene)?,
-//         //     cam: Self::get_cam(&scene)?,
-//         //     objs: Self::get_objs(&scene)?,
-//         //     lights: Self::get_lights(&scene)?,
-//         // })
-//         Ok(Scene {
-//             width: 300,
-//             height: 200,
-//             save_path: PathBuf::from("render.png"),
-//             cam: Camera {
-//                 pos: todo!(),
-//                 up: todo!(),
-//                 to: todo!(),
-//             },
-//             objs: vec![todo!()],
-//             lights: vec![todo!()],
-//         })
-//     }
-//
-//     fn get_width(scene: &Value) -> serde_json::Result<usize> {
-//         serde_json::from_value(scene["width"].clone())
-//     }
-//
-//     fn get_height(scene: &Value) -> serde_json::Result<usize> {
-//         serde_json::from_value(scene["height"].clone())
-//     }
-//
-//     fn get_path(scene: &Value) -> serde_json::Result<PathBuf> {
-//         serde_json::from_value(scene["path"].clone())
-//     }
-//
-//     fn get_cam(scene: &Value) -> serde_json::Result<Camera> {
-//         todo!()
-//     }
-//
-//     fn get_objs(scene: &Value) -> serde_json::Result<Vec<ObjectBox>> {
-//         const OBJS_TAG: &'static str = "objs";
-//
-//         let obj_values = scene[OBJS_TAG]
-//             .as_array()
-//             .ok_or_else(|| {
-//                 serde_json::error::Error::custom(
-//                     format!("Key {} should contain list", OBJS_TAG)
-//                 )
-//             })?;
-//
-//         obj_values
-//             .iter()
-//             .map(|value| {
-//                 let t = value["type"].to_string();
-//                 match &t[..] {
-//                     "\"plane\"" => Ok(Box::new(Plane) as ObjectBox),
-//                     "\"sphere\"" => Ok(Box::new(Sphere) as ObjectBox),
-//                     _ => Err(error::Error::custom(format!("Unknown figure: {}", t))),
-//                 }
-//             })
-//             .collect()
-//     }
-//
-//     fn get_lights(scene: &Value) -> serde_json::Result<Vec<LightBox>> {
-//         todo!()
-//     }
-// }
