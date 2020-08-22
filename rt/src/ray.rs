@@ -1,5 +1,5 @@
 use crate::scene::Camera;
-use crate::utils::{clone_vec, NormVector};
+use crate::utils::{clone_vec, NormVector, Positive};
 use crate::Vector;
 
 #[derive(Clone, Debug)]
@@ -9,19 +9,27 @@ pub(crate) struct Ray {
 }
 
 impl Ray {
-    pub(crate) fn from_cam(c: &Camera, w: f64, h: f64) -> Ray {
-        let right: Vector = c.to.cross(&c.up).normalize();
-        let viewport_w = f64::from(c.viewport_w);
-        let viewport_h = f64::from(c.viewport_h);
-        let left_top = &c.to - &right * (viewport_w / 2.) + *c.up * (viewport_h / 2.);
-        let dir = left_top - *c.up * h * viewport_h + right * w * viewport_w;
+    pub(crate) fn from_cam(
+        Camera { to, pos, up, vfov, aspect_ratio }: &Camera,
+        w: f64, h: f64,
+    ) -> Ray {
+        let vp_h = Positive::new(2. * (vfov.to_radians() / 2.).tan()).unwrap();
+        let vp_w = Positive::new(aspect_ratio.get() * vp_h.get()).unwrap();
+
+        let cam_look = (to - pos).normalize();
+        let right = cam_look.cross(up).normalize();
+        let cam_up = right.cross(&cam_look).normalize();
+        let hor = vp_w.get() * right;
+        let ver = vp_h.get() * cam_up;
+        let left_top = pos + cam_look - (0.5 * hor) + (0.5 * ver);
+        let dir = left_top - h * ver + w * hor - pos;
         Ray {
-            orig: clone_vec(&c.pos),
+            orig: clone_vec(pos),
             dir: NormVector::new(dir),
         }
     }
 
     pub(crate) fn point(&self, t: f64) -> Vector {
-        &self.orig + t * *self.dir
+        &self.orig + t * self.dir.get()
     }
 }

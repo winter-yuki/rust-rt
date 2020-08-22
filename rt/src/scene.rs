@@ -23,8 +23,8 @@ pub(crate) struct Camera {
     pub(crate) pos: Vector,
     pub(crate) up: NormVector,
     pub(crate) to: Vector,
-    pub(crate) viewport_w: Positive<f64>,
-    pub(crate) viewport_h: Positive<f64>,
+    pub(crate) vfov: Positive<f64>,
+    pub(crate) aspect_ratio: Positive<f64>,
 }
 
 pub enum Error {
@@ -36,7 +36,6 @@ type Result<T> = std::result::Result<T, Error>;
 
 impl Scene {
     pub fn from_json_file(_path: &Path) -> Result<Scene> {
-        // TODO make scene normalized
         // TODO
         Ok(Scene::default())
     }
@@ -46,16 +45,15 @@ impl Default for Scene {
     fn default() -> Self {
         let aspect_ratio = 16. / 9.;
         let width = 400;
-        let viewport_h = 2.;
         Scene {
             width: NonZeroUsize::new(width).unwrap(),
             height: NonZeroUsize::new((width as f64 / aspect_ratio).round() as usize).unwrap(),
             cam: Camera {
-                pos: Vector::new(0., 0., 0.),
+                pos: Vector::new(0., 2., 2.),
                 up: NormVector::new(Vector::new(0., 1., 0.)),
                 to: Vector::new(0., 0., -1.),
-                viewport_h: Positive::new(viewport_h).unwrap(),
-                viewport_w: Positive::new(viewport_h * aspect_ratio).unwrap(),
+                vfov: Positive::new(90.).unwrap(),
+                aspect_ratio: Positive::new(aspect_ratio).unwrap(),
             },
             objs: vec![
                 Box::new(Sphere {
