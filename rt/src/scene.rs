@@ -28,15 +28,15 @@ pub(crate) struct Camera {
 impl Default for Scene {
     fn default() -> Self {
         let aspect_ratio = 16. / 9.;
-        let width = 400;
+        let width = 600;
         Scene {
             width: NonZeroUsize::new(width).unwrap(),
             height: NonZeroUsize::new((width as f64 / aspect_ratio).round() as usize).unwrap(),
             cam: Camera {
-                pos: Vector::new(0., 1., 1.),
-                up: NormVector::new(Vector::new(0., 1., 0.)),
+                pos: Vector::new(0., 0., 1.),
+                up: NormVector::new(Vector::new(0.3, 1., 1.)),
                 to: Vector::new(0., 0., -1.),
-                vfov: Positive::new(90.).unwrap(),
+                vfov: Positive::new(60.).unwrap(),
                 aspect_ratio: Positive::new(aspect_ratio).unwrap(),
             },
             objs: vec![
@@ -55,11 +55,19 @@ impl Default for Scene {
                     }),
                 }),
                 Box::new(Sphere {
+                    center: Vector::new(1., 3.5, -6.),
+                    radius: Positive::new(2.).unwrap(),
+                    material: Arc::new(Metal {
+                        albedo: Color { r: 210, g: 100, b: 235 },
+                        fuzz: UniFloat::new(0.1).unwrap(),
+                    }),
+                }),
+                Box::new(Sphere {
                     center: Vector::new(5., 0., -6.),
                     radius: Positive::new(2.).unwrap(),
                     material: Arc::new(Metal {
                         albedo: Color { b: 200, r: 200, g: 200 },
-                        fuzz: UniFloat::new(0.3).unwrap(),
+                        fuzz: UniFloat::new(0.2).unwrap(),
                     }),
                 }),
                 Box::new(Sphere {
