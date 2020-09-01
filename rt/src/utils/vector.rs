@@ -15,7 +15,7 @@ pub(crate) fn random_unit() -> Vector {
 }
 
 pub(crate) fn reflect(v: &NormVector, n: &NormVector) -> NormVector {
-    NormVector::new(v.get() - 2. * v.dot(n) * n.get())
+    NormVector::from(v.get() - 2. * v.dot(n) * n.get())
 }
 
 pub(crate) fn clone_vec(v: &Vector) -> Vector {

@@ -22,4 +22,5 @@ mod render;
 mod ray;
 mod utils;
 
-pub type Vector = na::Vector3<f64>;
+pub type VFloat = f64;
+pub type Vector = na::Vector3<VFloat>;

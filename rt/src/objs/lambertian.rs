@@ -14,7 +14,7 @@ impl Material for Lambertian {
             attenuation: self.albedo,
             scattered: Ray {
                 orig: clone_vec(p),
-                dir: NormVector::new(normal.get() + random_unit()),
+                dir: NormVector::from(normal.get() + random_unit()),
             },
         })
     }

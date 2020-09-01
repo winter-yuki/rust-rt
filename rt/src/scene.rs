@@ -97,7 +97,7 @@ impl Default for Scene {
             height: NonZeroUsize::new((width as f64 / aspect_ratio).round() as usize).unwrap(),
             cam: Camera {
                 pos: Vector::new(0., 0., 1.),
-                up: NormVector::new(Vector::new(0.3, 1., 1.)),
+                up: NormVector::new(0.3, 1., 1.),
                 to: Vector::new(0., 0., -1.),
                 vfov: Positive::new(60.).unwrap(),
                 aspect_ratio: Positive::new(aspect_ratio).unwrap(),

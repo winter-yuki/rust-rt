@@ -25,7 +25,7 @@ impl Ray {
         let dir = left_top - h * ver + w * hor - pos;
         Ray {
             orig: clone_vec(pos),
-            dir: NormVector::new(dir),
+            dir: NormVector::from(dir),
         }
     }
 

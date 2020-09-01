@@ -21,7 +21,7 @@ impl Material for Metal {
                 attenuation: self.albedo,
                 scattered: Ray {
                     orig: clone_vec(p),
-                    dir: NormVector::new(reflected.get() + self.fuzz.get() * random_unit()),
+                    dir: NormVector::from(reflected.get() + self.fuzz.get() * random_unit()),
                 },
             })
         } else {

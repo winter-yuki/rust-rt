@@ -83,7 +83,7 @@ impl Touch for Sphere {
         let t = cmp::max(FloatOrd(t1), FloatOrd(t2)).0;
         if t > 0. {
             Some(Touching {
-                normal: NormVector::new(orig - &self.center),
+                normal: NormVector::from(orig - &self.center),
                 p: r.point(t),
                 t: Positive::new(t).unwrap(),
                 material: Arc::clone(&self.material),

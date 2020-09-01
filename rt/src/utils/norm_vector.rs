@@ -2,18 +2,22 @@ use std::ops::{Deref, DerefMut};
 
 use approx::AbsDiffEq;
 
+use crate::{Vector, VFloat};
 use crate::utils::clone_vec;
-use crate::Vector;
 
 #[derive(Debug)]
 pub struct NormVector(Vector);
 
 impl NormVector {
-    pub fn new(v: Vector) -> Self {
-        NormVector(v.normalize())
+    pub fn new(x: VFloat, y: VFloat, z: VFloat) -> Self {
+        NormVector::from(Vector::new(x, y, z))
     }
 
-    pub fn new_unchecked(v: Vector) -> Self {
+    pub fn new_unchecked(x: VFloat, y: VFloat, z: VFloat) -> Self {
+        NormVector::from_unchecked(Vector::new(x, y, z))
+    }
+
+    pub fn from_unchecked(v: Vector) -> Self {
         debug_assert!(v.norm().abs_diff_eq(&1., 1e-5));
         NormVector(v)
     }
@@ -25,7 +29,7 @@ impl NormVector {
 
 impl From<Vector> for NormVector {
     fn from(v: Vector) -> Self {
-        NormVector::new(v)
+        NormVector(v.normalize())
     }
 }
 
@@ -51,6 +55,6 @@ impl DerefMut for NormVector {
 
 impl Clone for NormVector {
     fn clone(&self) -> Self {
-        NormVector::new_unchecked(clone_vec(&self.0))
+        NormVector::from_unchecked(clone_vec(&self.0))
     }
 }

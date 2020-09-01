@@ -42,15 +42,14 @@ impl From<image::Error> for Error {
 
 fn main() {
     let args: Vec<_> = env::args().collect();
-    let process = AtomicUsize::new(0);
+    let progress = AtomicUsize::new(0);
     let logger = Box::new(move |_, _| {
-        if process.fetch_add(1, Ordering::SeqCst) % 10 == 0 {
+        if progress.fetch_add(1, Ordering::SeqCst) % 10 == 0 {
             print!(".");
             io::stdout().flush().unwrap();
         }
     });
-    let res = run(args, logger);
-    match res {
+    match try_main(args, logger) {
         Ok(()) => println!("Finished!"),
         Err(e) => match e {
             Error::Cli => {
@@ -65,7 +64,7 @@ fn main() {
     }
 }
 
-fn run(args: Vec<String>, logger: Logger) -> Result<(), Error> {
+fn try_main(args: Vec<String>, logger: Logger) -> Result<(), Error> {
     let Cli { save_path } = Cli::new(&args).ok_or(Error::Cli)?;
     let scene = scene();
     let image = rt::Render::new(&scene)
@@ -84,7 +83,7 @@ fn scene() -> Scene {
         .height(NonZeroUsize::new((width as f64 / aspect_ratio).round() as usize).unwrap())
         .cam(Camera {
             pos: Vector::new(0., 0., 1.),
-            up: NormVector::new(Vector::new(0.3, 1., 1.)),
+            up: NormVector::new(0.3, 1., 1.),
             to: Vector::new(0., 0., -1.),
             vfov: Positive::new(60.).unwrap(),
             aspect_ratio: Positive::new(aspect_ratio).unwrap(),
