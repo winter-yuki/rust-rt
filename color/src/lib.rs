@@ -68,18 +68,6 @@ impl<C: AddAssign + Float> ops::AddAssign for Color<C> {
     }
 }
 
-impl<C: ToPrimitive + Num> ops::Mul<Color<C>> for f64 {
-    type Output = Color<f64>;
-
-    fn mul(self, Color { r, g, b }: Color<C>) -> Self::Output {
-        Color {
-            r: self * r.to_f64().unwrap(),
-            g: self * g.to_f64().unwrap(),
-            b: self * b.to_f64().unwrap(),
-        }
-    }
-}
-
 impl<T: Mul + Float> ops::Mul for Color<T> {
     type Output = Color<T>;
 
@@ -92,22 +80,41 @@ impl<T: Mul + Float> ops::Mul for Color<T> {
     }
 }
 
-impl From<Color<f64>> for Color<u8> {
-    fn from(Color { r, g, b }: Color<f64>) -> Self {
-        Color {
-            r: r.round() as u8,
-            g: g.round() as u8,
-            b: b.round() as u8,
+macro_rules! color_impls {
+    ( $float:ty ) => {
+        impl<C: ToPrimitive + Num> ops::Mul<Color<C>> for $float {
+            type Output = Color<$float>;
+
+            fn mul(self, Color { r, g, b }: Color<C>) -> Self::Output {
+                Color {
+                    r: self * r.to_f64().unwrap() as $float,
+                    g: self * g.to_f64().unwrap() as $float,
+                    b: self * b.to_f64().unwrap() as $float,
+                }
+            }
+        }
+
+        impl From<Color<$float>> for Color<u8> {
+            fn from(Color { r, g, b }: Color<$float>) -> Self {
+                Color {
+                    r: r.round() as u8,
+                    g: g.round() as u8,
+                    b: b.round() as u8,
+                }
+            }
+        }
+
+        impl From<Color<u8>> for Color<$float> {
+            fn from(Color { r, g, b }: Color<u8>) -> Self {
+                Color {
+                    r: r as $float,
+                    g: g as $float,
+                    b: b as $float,
+                }
+            }
         }
     }
 }
 
-impl From<Color<u8>> for Color<f64> {
-    fn from(Color { r, g, b }: Color<u8>) -> Self {
-        Color {
-            r: r as f64,
-            g: g as f64,
-            b: b as f64,
-        }
-    }
-}
+color_impls!(f32);
+color_impls!(f64);
